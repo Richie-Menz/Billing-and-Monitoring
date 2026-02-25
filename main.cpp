@@ -170,3 +170,11 @@ int main() {
 
     return 0;
 }
+double calculateBilling(double tariff) {
+
+    double totalEnergy = calculateTotalEnergy();
+
+    double totalCost = totalEnergy * tariff;
+
+    return totalCost;
+}
