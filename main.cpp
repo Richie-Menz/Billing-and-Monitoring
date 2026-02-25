@@ -1,8 +1,7 @@
-
-}#include <string>
+#include <string>
 #include <iostream>
 #include <vector>
-#include <iomanip> // For better decimal formatting
+#include <iomanip>
 
 using namespace std;
 
@@ -13,12 +12,14 @@ private:
     double usageHours;
 
 public:
-    Appliance(string n, double p, double h) : name(n), powerRating(p), usageHours(h) {}
+    Appliance(string n, double p, double h)
+        : name(n), powerRating(p), usageHours(h) {}
 
     string getName() const { return name; }
     double getPower() const { return powerRating; }
     double getHours() const { return usageHours; }
 
+    // Energy calculation
     double calculateEnergy() const {
         return (powerRating * usageHours) / 1000.0;
     }
@@ -26,11 +27,28 @@ public:
 
 vector<Appliance> appliances;
 
+
+// FIX 1: ADD THIS FUNCTION (missing in your code)
+double calculateTotalEnergy() {
+
+    double totalEnergy = 0;
+
+    for (const Appliance& a : appliances) {
+        totalEnergy += a.calculateEnergy();
+    }
+
+    return totalEnergy;
+}
+
+
+// Register appliance
 void registerAppliance() {
+
     string name;
     double power, hours;
 
     cout << "\n--- Register New Appliance ---\n";
+
     cout << "Enter appliance name: ";
     getline(cin, name);
 
@@ -41,6 +59,7 @@ void registerAppliance() {
 
     cout << "Enter power rating (Watts): ";
     cin >> power;
+
     while (power <= 0) {
         cout << "Power must be > 0. Enter again: ";
         cin >> power;
@@ -48,65 +67,106 @@ void registerAppliance() {
 
     cout << "Enter daily usage hours (0 - 24): ";
     cin >> hours;
+
     while (hours < 0 || hours > 24) {
         cout << "Hours must be 0-24. Enter again: ";
         cin >> hours;
     }
-    cin.ignore(1000, '\n'); // Clear buffer for next menu input
+
+    cin.ignore(1000, '\n');
 
     appliances.push_back(Appliance(name, power, hours));
+
     cout << "Appliance registered successfully!\n";
 }
 
+
+// FIX 2: CLEAN viewAppliances FUNCTION
 void viewAppliances() {
-   cout << left << setw(15) << "Name"
-     << setw(12) << "Power(W)"
-     << setw(12) << "Hours"
-     << setw(12) << "Energy(kWh)" << endl;
 
-for (Appliance a : appliances) {
-    cout << left << setw(15) << a.getName()
-         << setw(12) << a.getPower()
-         << setw(12) << a.getHours()
-         << setw(12) << a.calculateEnergy() << endl;}
+    if (appliances.empty()) {
+        cout << "No appliances registered.\n";
+        return;
+    }
 
-    double totalEnergy = 0;
     cout << "\n--- Registered Appliances ---\n";
-    printf("%-20s %-10s %-10s %-10s\n", "Name", "Watts", "Hours", "kWh/Day");
-    cout << "--------------------------------------------------------\n";
 
-   
-} 
+    cout << left
+         << setw(20) << "Name"
+         << setw(12) << "Power(W)"
+         << setw(12) << "Hours"
+         << setw(12) << "Energy(kWh)" << endl;
+
+    cout << "-----------------------------------------------------\n";
+
+    for (const Appliance& a : appliances) {
+
+        cout << left
+             << setw(20) << a.getName()
+             << setw(12) << a.getPower()
+             << setw(12) << a.getHours()
+             << setw(12) << fixed << setprecision(2)
+             << a.calculateEnergy()
+             << endl;
+    }
+}
 
 
-
+// MAIN FUNCTION
 int main() {
+
     int choice;
+
     while (true) {
+
         cout << "\n--- ENERGY TRACKER MENU ---\n";
+
         cout << "1. Register Appliance\n";
         cout << "2. View Registered Appliances\n";
         cout << "3. Calculate Total Energy\n";
         cout << "4. Exit\n";
+
         cout << "Enter choice: ";
-        
+
         if (!(cin >> choice)) {
+
             cout << "Invalid input. Please enter a number.\n";
+
             cin.clear();
             cin.ignore(1000, '\n');
+
             continue;
         }
-        cin.ignore(1000, '\n'); // Critical: clears the 'Enter' key from buffer
+
+        cin.ignore(1000, '\n');
+
 
         switch (choice) {
-            case 1: registerAppliance(); break;
-            case 2: viewAppliances(); break;
-        case 3:
-    cout << "Total Energy: "
-         << calculateTotalEnergy()
-         << " kWh\n";
-    break;
 
-case 4:
-    cout << "Goodbye\n";
-    break;}
+        case 1:
+            registerAppliance();
+            break;
+
+        case 2:
+            viewAppliances();
+            break;
+
+        case 3:
+            cout << fixed << setprecision(2);
+
+            cout << "Total Energy: "
+                 << calculateTotalEnergy()
+                 << " kWh\n";
+            break;
+
+        case 4:
+            cout << "Goodbye\n";
+            return 0;
+
+        default:
+            cout << "Invalid choice\n";
+        }
+    }
+
+    return 0;
+}
