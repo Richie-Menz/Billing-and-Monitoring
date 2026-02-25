@@ -178,3 +178,19 @@ double calculateBilling(double tariff) {
 
     return totalCost;
 }
+void performBillingCalculation() {
+
+    double tariff;
+
+    cout << "\nEnter tariff per kWh: ";
+    cin >> tariff;
+
+    while (tariff <= 0) {
+
+        cout << "Tariff must be greater than 0. Enter again: ";
+        cin >> tariff;
+    }
+
+    double totalEnergy = calculateTotalEnergy();
+
+    double totalCost = totalEnergy * tariff;}
