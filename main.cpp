@@ -101,8 +101,12 @@ int main() {
         switch (choice) {
             case 1: registerAppliance(); break;
             case 2: viewAppliances(); break;
-            case 3: cout << "Goodbye!\n"; return 0;
-            default: cout << "Invalid choice.\n";
-        }
-    }
-}
+        case 3:
+    cout << "Total Energy: "
+         << calculateTotalEnergy()
+         << " kWh\n";
+    break;
+
+case 4:
+    cout << "Goodbye\n";
+    break;}
