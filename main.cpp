@@ -59,19 +59,16 @@ void registerAppliance() {
 }
 
 void viewAppliances() {
-    if (appliances.empty()) {
-        cout << "\nNo appliances registered yet.\n";
-        return;
-    }
-    float calculateTotalEnergy() {
+   cout << left << setw(15) << "Name"
+     << setw(12) << "Power(W)"
+     << setw(12) << "Hours"
+     << setw(12) << "Energy(kWh)" << endl;
 
-    float total = 0;
-
-    for (Appliance a : appliances)
-        total += a.calculateEnergy();
-
-    return total;
-}
+for (Appliance a : appliances) {
+    cout << left << setw(15) << a.getName()
+         << setw(12) << a.getPower()
+         << setw(12) << a.getHours()
+         << setw(12) << a.calculateEnergy() << endl;}
 
     double totalEnergy = 0;
     cout << "\n--- Registered Appliances ---\n";
@@ -79,7 +76,7 @@ void viewAppliances() {
     cout << "--------------------------------------------------------\n";
 
    
-}
+} 
 
 
 
