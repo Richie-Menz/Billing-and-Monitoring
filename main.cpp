@@ -19,19 +19,20 @@ public:
     double getPower() const { return powerRating; }
     double getHours() const { return usageHours; }
 
-    // Energy calculation
+    // Energy calculation in kWh
     double calculateEnergy() const {
         return (powerRating * usageHours) / 1000.0;
     }
 };
 
+// Global appliance list
 vector<Appliance> appliances;
 
 
-// FIX 1: ADD THIS FUNCTION (missing in your code)
+// Calculate total energy
 double calculateTotalEnergy() {
 
-    double totalEnergy = 0;
+    double totalEnergy = 0.0;
 
     for (const Appliance& a : appliances) {
         totalEnergy += a.calculateEnergy();
@@ -45,7 +46,8 @@ double calculateTotalEnergy() {
 void registerAppliance() {
 
     string name;
-    double power, hours;
+    double power;
+    double hours;
 
     cout << "\n--- Register New Appliance ---\n";
 
@@ -60,16 +62,20 @@ void registerAppliance() {
     cout << "Enter power rating (Watts): ";
     cin >> power;
 
-    while (power <= 0) {
-        cout << "Power must be > 0. Enter again: ";
+    while (cin.fail() || power <= 0) {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "Invalid input. Enter power > 0: ";
         cin >> power;
     }
 
     cout << "Enter daily usage hours (0 - 24): ";
     cin >> hours;
 
-    while (hours < 0 || hours > 24) {
-        cout << "Hours must be 0-24. Enter again: ";
+    while (cin.fail() || hours < 0 || hours > 24) {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "Invalid input. Enter hours (0 - 24): ";
         cin >> hours;
     }
 
@@ -81,11 +87,11 @@ void registerAppliance() {
 }
 
 
-// FIX 2: CLEAN viewAppliances FUNCTION
+// View appliances
 void viewAppliances() {
 
     if (appliances.empty()) {
-        cout << "No appliances registered.\n";
+        cout << "\nNo appliances registered.\n";
         return;
     }
 
@@ -95,9 +101,9 @@ void viewAppliances() {
          << setw(20) << "Name"
          << setw(12) << "Power(W)"
          << setw(12) << "Hours"
-         << setw(12) << "Energy(kWh)" << endl;
+         << setw(15) << "Energy(kWh)" << endl;
 
-    cout << "-----------------------------------------------------\n";
+    cout << "----------------------------------------------------------\n";
 
     for (const Appliance& a : appliances) {
 
@@ -105,14 +111,66 @@ void viewAppliances() {
              << setw(20) << a.getName()
              << setw(12) << a.getPower()
              << setw(12) << a.getHours()
-             << setw(12) << fixed << setprecision(2)
+             << setw(15) << fixed << setprecision(2)
              << a.calculateEnergy()
              << endl;
     }
 }
 
 
-// MAIN FUNCTION
+// Calculate billing
+double calculateBilling(double tariff) {
+
+    double totalEnergy = calculateTotalEnergy();
+
+    return totalEnergy * tariff;
+}
+
+
+// Perform billing calculation
+void performBillingCalculation() {
+
+    if (appliances.empty()) {
+        cout << "\nNo appliances registered.\n";
+        return;
+    }
+
+    double tariff;
+
+    cout << "\nEnter tariff per kWh: ";
+    cin >> tariff;
+
+    while (cin.fail() || tariff <= 0) {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "Invalid tariff. Enter value > 0: ";
+        cin >> tariff;
+    }
+
+    cin.ignore(1000, '\n');
+
+    double totalEnergy = calculateTotalEnergy();
+
+    double totalCost = calculateBilling(tariff);
+
+    cout << fixed << setprecision(2);
+
+    cout << "\n------ BILLING SUMMARY ------\n";
+
+    cout << "Total Energy Consumed : "
+         << totalEnergy << " kWh\n";
+
+    cout << "Tariff Rate           : "
+         << tariff << " per kWh\n";
+
+    cout << "Total Electricity Cost: "
+         << totalCost << endl;
+
+    cout << "-----------------------------\n";
+}
+
+
+// Main menu
 int main() {
 
     int choice;
@@ -124,22 +182,21 @@ int main() {
         cout << "1. Register Appliance\n";
         cout << "2. View Registered Appliances\n";
         cout << "3. Calculate Total Energy\n";
-        cout << "4. Exit\n";
+        cout << "4. Calculate Billing\n";
+        cout << "5. Exit\n";
 
         cout << "Enter choice: ";
 
-        if (!(cin >> choice)) {
+        cin >> choice;
 
-            cout << "Invalid input. Please enter a number.\n";
-
+        if (cin.fail()) {
             cin.clear();
             cin.ignore(1000, '\n');
-
+            cout << "Invalid input. Enter a number.\n";
             continue;
         }
 
         cin.ignore(1000, '\n');
-
 
         switch (choice) {
 
@@ -153,44 +210,23 @@ int main() {
 
         case 3:
             cout << fixed << setprecision(2);
-
-            cout << "Total Energy: "
+            cout << "\nTotal Energy: "
                  << calculateTotalEnergy()
                  << " kWh\n";
             break;
 
         case 4:
-            cout << "Goodbye\n";
+            performBillingCalculation();
+            break;
+
+        case 5:
+            cout << "\nGoodbye\n";
             return 0;
 
         default:
-            cout << "Invalid choice\n";
+            cout << "Invalid choice. Try again.\n";
         }
     }
 
     return 0;
 }
-double calculateBilling(double tariff) {
-
-    double totalEnergy = calculateTotalEnergy();
-
-    double totalCost = totalEnergy * tariff;
-
-    return totalCost;
-}
-void performBillingCalculation() {
-
-    double tariff;
-
-    cout << "\nEnter tariff per kWh: ";
-    cin >> tariff;
-
-    while (tariff <= 0) {
-
-        cout << "Tariff must be greater than 0. Enter again: ";
-        cin >> tariff;
-    }
-
-    double totalEnergy = calculateTotalEnergy();
-
-    double totalCost = totalEnergy * tariff;}
