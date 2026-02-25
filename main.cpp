@@ -1,4 +1,5 @@
-#include <string>
+
+}#include <string>
 #include <iostream>
 #include <vector>
 #include <iomanip> // For better decimal formatting
@@ -62,6 +63,15 @@ void viewAppliances() {
         cout << "\nNo appliances registered yet.\n";
         return;
     }
+    float calculateTotalEnergy() {
+
+    float total = 0;
+
+    for (Appliance a : appliances)
+        total += a.calculateEnergy();
+
+    return total;
+}
 
     double totalEnergy = 0;
     cout << "\n--- Registered Appliances ---\n";
