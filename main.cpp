@@ -86,7 +86,8 @@ int main() {
         cout << "\n--- ENERGY TRACKER MENU ---\n";
         cout << "1. Register Appliance\n";
         cout << "2. View Registered Appliances\n";
-        cout << "3. Exit\n";
+        cout << "3. Calculate Total Energy\n";
+        cout << "4. Exit\n";
         cout << "Enter choice: ";
         
         if (!(cin >> choice)) {
