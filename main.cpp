@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <iomanip>
+#include <fstream>
 
 using namespace std;
 
@@ -27,33 +28,61 @@ public:
 
 // Global appliance list
 vector<Appliance> appliances;
+const string FILE_NAME = "appliances.txt";
 
+// Save appliances to file
+void saveToFile() {
+    ofstream file(FILE_NAME);
+
+    for (const Appliance& a : appliances) {
+        file << a.getName() << ","
+             << a.getPower() << ","
+             << a.getHours() << endl;
+    }
+
+    file.close();
+    cout << "Data saved successfully.\n";
+}
+
+// Load appliances from file
+void loadFromFile() {
+    ifstream file(FILE_NAME);
+
+    string line;
+    while (getline(file, line)) {
+        size_t pos1 = line.find(",");
+        size_t pos2 = line.find(",", pos1 + 1);
+
+        string name = line.substr(0, pos1);
+        double power = stod(line.substr(pos1 + 1, pos2 - pos1 - 1));
+        double hours = stod(line.substr(pos2 + 1));
+
+        appliances.push_back(Appliance(name, power, hours));
+    }
+
+    file.close();
+}
 
 // Calculate total energy
 double calculateTotalEnergy() {
-
     double totalEnergy = 0.0;
-
     for (const Appliance& a : appliances) {
         totalEnergy += a.calculateEnergy();
     }
-
     return totalEnergy;
 }
 
-
 // Register appliance
 void registerAppliance() {
-
     string name;
     double power;
     double hours;
 
+    cin.ignore(); // clear input buffer
     cout << "\n--- Register New Appliance ---\n";
 
     cout << "Enter appliance name: ";
     getline(cin, name);
-
     while (name.empty()) {
         cout << "Name cannot be empty. Enter again: ";
         getline(cin, name);
@@ -61,7 +90,6 @@ void registerAppliance() {
 
     cout << "Enter power rating (Watts): ";
     cin >> power;
-
     while (cin.fail() || power <= 0) {
         cin.clear();
         cin.ignore(1000, '\n');
@@ -71,7 +99,6 @@ void registerAppliance() {
 
     cout << "Enter daily usage hours (0 - 24): ";
     cin >> hours;
-
     while (cin.fail() || hours < 0 || hours > 24) {
         cin.clear();
         cin.ignore(1000, '\n');
@@ -79,17 +106,14 @@ void registerAppliance() {
         cin >> hours;
     }
 
-    cin.ignore(1000, '\n');
-
     appliances.push_back(Appliance(name, power, hours));
+    saveToFile(); // Save after registration
 
     cout << "Appliance registered successfully!\n";
 }
 
-
 // View appliances
 void viewAppliances() {
-
     if (appliances.empty()) {
         cout << "\nNo appliances registered.\n";
         return;
@@ -103,10 +127,9 @@ void viewAppliances() {
          << setw(12) << "Hours"
          << setw(15) << "Energy(kWh)" << endl;
 
-    cout << "----------------------------------------------------------\n";
+    cout << "----------------------------------------------\n";
 
     for (const Appliance& a : appliances) {
-
         cout << left
              << setw(20) << a.getName()
              << setw(12) << a.getPower()
@@ -117,26 +140,19 @@ void viewAppliances() {
     }
 }
 
-
 // Calculate billing
 double calculateBilling(double tariff) {
-
-    double totalEnergy = calculateTotalEnergy();
-
-    return totalEnergy * tariff;
+    return calculateTotalEnergy() * tariff;
 }
-
 
 // Perform billing calculation
 void performBillingCalculation() {
-
     if (appliances.empty()) {
         cout << "\nNo appliances registered.\n";
         return;
     }
 
     double tariff;
-
     cout << "\nEnter tariff per kWh: ";
     cin >> tariff;
 
@@ -147,38 +163,24 @@ void performBillingCalculation() {
         cin >> tariff;
     }
 
-    cin.ignore(1000, '\n');
-
     double totalEnergy = calculateTotalEnergy();
-
     double totalCost = calculateBilling(tariff);
 
     cout << fixed << setprecision(2);
-
     cout << "\n------ BILLING SUMMARY ------\n";
-
-    cout << "Total Energy Consumed : "
-         << totalEnergy << " kWh\n";
-
-    cout << "Tariff Rate           : "
-         << tariff << " per kWh\n";
-
-    cout << "Total Electricity Cost: "
-         << totalCost << endl;
-
+    cout << "Total Energy Consumed : " << totalEnergy << " kWh\n";
+    cout << "Tariff Rate           : " << tariff << " per kWh\n";
+    cout << "Total Electricity Cost: " << totalCost << endl;
     cout << "-----------------------------\n";
 }
 
-
 // Main menu
 int main() {
-
+    loadFromFile(); // Load data at startup
     int choice;
 
     while (true) {
-
         cout << "\n--- ENERGY TRACKER MENU ---\n";
-
         cout << "1. Register Appliance\n";
         cout << "2. View Registered Appliances\n";
         cout << "3. Calculate Total Energy\n";
@@ -186,7 +188,6 @@ int main() {
         cout << "5. Exit\n";
 
         cout << "Enter choice: ";
-
         cin >> choice;
 
         if (cin.fail()) {
@@ -196,37 +197,26 @@ int main() {
             continue;
         }
 
-        cin.ignore(1000, '\n');
-
         switch (choice) {
-
         case 1:
             registerAppliance();
             break;
-
         case 2:
             viewAppliances();
             break;
-
         case 3:
             cout << fixed << setprecision(2);
-            cout << "\nTotal Energy: "
-                 << calculateTotalEnergy()
-                 << " kWh\n";
+            cout << "\nTotal Energy: " << calculateTotalEnergy() << " kWh\n";
             break;
-
         case 4:
             performBillingCalculation();
             break;
-
         case 5:
             cout << "\nGoodbye\n";
             return 0;
-
         default:
             cout << "Invalid choice. Try again.\n";
         }
     }
-
     return 0;
 }
