@@ -1,4 +1,4 @@
-# Electrical Load Monitoring and Billing Simulator
+# Electrical Load Billing and Monitoring
 
 ## Course
 EEE 227 – C++ Programming
