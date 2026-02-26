@@ -20,7 +20,6 @@ public:
     double getPower() const { return powerRating; }
     double getHours() const { return usageHours; }
 
-    // Energy calculation in kWh
     double calculateEnergy() const {
         return (powerRating * usageHours) / 1000.0;
     }
@@ -35,9 +34,7 @@ void saveToFile() {
     ofstream file(FILE_NAME);
 
     for (const Appliance& a : appliances) {
-        file << a.getName() << ","
-             << a.getPower() << ","
-             << a.getHours() << endl;
+        file << a.getName() << "," << a.getPower() << "," << a.getHours() << endl;
     }
 
     file.close();
@@ -47,6 +44,7 @@ void saveToFile() {
 // Load appliances from file
 void loadFromFile() {
     ifstream file(FILE_NAME);
+    if (!file) return; // if file doesn't exist, skip
 
     string line;
     while (getline(file, line)) {
@@ -61,6 +59,7 @@ void loadFromFile() {
     }
 
     file.close();
+    cout << "Data loaded successfully.\n";
 }
 
 // Calculate total energy
@@ -107,7 +106,7 @@ void registerAppliance() {
     }
 
     appliances.push_back(Appliance(name, power, hours));
-    saveToFile(); // Save after registration
+    saveToFile();
 
     cout << "Appliance registered successfully!\n";
 }
@@ -155,7 +154,6 @@ void performBillingCalculation() {
     double tariff;
     cout << "\nEnter tariff per kWh: ";
     cin >> tariff;
-
     while (cin.fail() || tariff <= 0) {
         cin.clear();
         cin.ignore(1000, '\n');
@@ -176,9 +174,9 @@ void performBillingCalculation() {
 
 // Main menu
 int main() {
-    loadFromFile(); // Load data at startup
-    int choice;
+    loadFromFile();
 
+    int choice;
     while (true) {
         cout << "\n--- ENERGY TRACKER MENU ---\n";
         cout << "1. Register Appliance\n";
@@ -218,5 +216,6 @@ int main() {
             cout << "Invalid choice. Try again.\n";
         }
     }
+
     return 0;
 }
